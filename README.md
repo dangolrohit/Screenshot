@@ -25,29 +25,6 @@ Full Page Screenshot is a minimal Chrome extension that captures the **entire he
 
 ---
 
-## Screenshots
-
-```
-┌─────────────────────────────┐   ┌─────────────────────────────┐
-│                             │   │ 📷 Full Page Screenshot     │
-│        📷                   │   │    Ultra HD · Single image  │
-│                             │   │─────────────────────────────│
-│      Welcome to             │   │ FORMAT                      │
-│  Full Page Screenshot       │   │ [ PNG ]  [ WebP ✦ ] [ JPEG ]│
-│  ─────────────────          │   │                             │
-│  by Rohit Dangol            │   │ Recommended ✦ — WebP        │
-│                             │   │ excellent quality, half the │
-│  Capture any webpage as a   │   │ size of PNG.                │
-│  complete single image.     │   │                             │
-│                             │   │ QUALITY             90%     │
-│  [    Start  ›    ]         │   │ ━━━━━━━━━━━━━░░░░           │
-│                             │   │                             │
-│  v2.0 · Full page · Single  │   │ [  Capture Full Page  ]     │
-└─────────────────────────────┘   └─────────────────────────────┘
-        Intro screen                       Main screen
-```
-
----
 
 ## Installation
 
@@ -59,7 +36,7 @@ Chrome does not require an account or payment to sideload extensions.
 
    ```bash
    git clone https://github.com/dangolrohit/screenshot.git
-   cd full-page-screenshot
+   cd screenshot
    ```
 
 2. **(Optional) Regenerate icons**
@@ -107,49 +84,6 @@ The popup shows a live progress bar through each stage. Keep it open until "Save
 
 ---
 
-## How it works
-
-This extension uses the **Chrome DevTools Protocol (CDP)** — the same API that powers Chrome DevTools — to take a true single-shot capture of the full page. There is no scrolling loop.
-
-```
-User clicks "Capture"
-       │
-       ▼
-1. chrome.debugger.attach()        — attach CDP to the active tab
-       │
-       ▼
-2. Runtime.evaluate()              — read scrollWidth, scrollHeight, devicePixelRatio
-       │
-       ▼
-3. Emulation.setDeviceMetricsOverride()
-                                   — expand the virtual viewport to full page size
-                                   — set deviceScaleFactor = native DPR (Ultra HD)
-       │
-       ▼
-4. Page.captureScreenshot()        — ONE call captures the entire page as base64
-   { captureBeyondViewport: true }
-       │
-       ▼
-5. Emulation.clearDeviceMetricsOverride()
-                                   — restore the original viewport
-       │
-       ▼
-6. chrome.debugger.detach()        — release the tab
-       │
-       ▼
-7. chrome.downloads.download()     — save the file to Downloads
-```
-
-### Why CDP instead of scroll-and-stitch?
-
-The classic approach (scroll the page, call `captureVisibleTab` repeatedly, stitch segments on a canvas) has several problems:
-
-- Chrome rate-limits `captureVisibleTab` to ~2 calls per second
-- Fixed/sticky elements appear duplicated in each segment
-- Canvas stitching introduces visible seams and memory pressure
-- It is slow on long pages
-
-The CDP approach has none of these issues. The whole capture takes 1–2 seconds regardless of page length.
 
 ### A note on the DevTools banner
 
@@ -203,108 +137,11 @@ No data leaves your machine. No network requests are made. The image is captured
 
 ---
 
-## Development
-
-### Prerequisites
-
-- Chrome 90+ (any modern version)
-- Python 3 (only needed to regenerate icons)
-
-### Regenerate icons
-
-```bash
-python3 generate_icons.py
-# Creates icons/icon16.png, icons/icon48.png, icons/icon128.png
-```
-
-### Reset the intro screen
-
-The welcome screen only shows once (stored in `localStorage`). To see it again during development, open the popup, right-click → **Inspect**, then run:
-
-```js
-localStorage.clear()
-```
-
-Reload the popup.
-
-### Reload after editing
-
-After changing any file, go to `chrome://extensions` and click the **↺ reload** button next to the extension, then reopen the popup.
-
----
-
-## Contributing
-
-Pull requests are welcome. Please open an issue first if you are planning a larger change.
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-change`
-3. Commit your changes: `git commit -m "feat: describe what you added"`
-4. Push and open a pull request
-
----
-
 ## License
 
 MIT — see [LICENSE](LICENSE) for details.
 
 You are free to use, modify, and distribute this extension. Attribution is appreciated but not required.
-
----
-
-## Author
-
-**Rohit Dangol**
-[github.com/dangolrohit](https://github.com/dangolrohit)
-
----
-
-## Chrome Web Store listing copy
-
-> The sections below are ready to paste directly into the Chrome Web Store developer dashboard.
-
-### Short description *(132 characters max)*
-
-```
-Capture any webpage as a single Ultra HD image — PNG, WebP, or JPEG. One click, no scrolling, no stitching.
-```
-
-### Detailed description
-
-```
-Full Page Screenshot captures the entire height of any webpage — from the very top to the very bottom — and saves it as one image file.
-
-HOW IT WORKS
-Unlike other screenshot tools that scroll and stitch multiple captures together, this extension uses the Chrome DevTools Protocol to take a true single-shot capture. The result is a seamless, pixel-perfect image with no visible seams or duplicated headers.
-
-FORMATS
-• PNG  — lossless, perfect for text and UI
-• WebP — recommended, excellent quality at half the PNG size
-• JPEG — smallest file size, great for photos and sharing
-
-QUALITY CONTROL
-For WebP and JPEG you can set the quality level (60–100 %) using a slider before capturing.
-
-ULTRA HD
-On HiDPI / Retina displays the output is captured at 2× native resolution, producing crisp 4K-quality images even on very long pages.
-
-PRIVACY
-No data leaves your device. No analytics, no servers, no accounts required. Images are saved directly to your Downloads folder.
-
-HOW TO USE
-1. Navigate to any webpage
-2. Click the 📷 icon in the toolbar
-3. Choose PNG, WebP, or JPEG
-4. Click "Capture Full Page"
-5. The file appears in your Downloads folder automatically
-
-LIMITATIONS
-• Cannot capture Chrome internal pages (chrome://, about:)
-• If Chrome DevTools is open for the tab, close it before capturing
-• The popup must remain open during the capture
-
-Built by Rohit Dangol.
-```
 
 ---
 

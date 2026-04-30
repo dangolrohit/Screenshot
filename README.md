@@ -58,7 +58,7 @@ Chrome does not require an account or payment to sideload extensions.
 1. **Download or clone this repository**
 
    ```bash
-   git clone https://github.com/rohitdangol/full-page-screenshot.git
+   git clone https://github.com/dangolrohit/screenshot.git
    cd full-page-screenshot
    ```
 
@@ -255,7 +255,7 @@ You are free to use, modify, and distribute this extension. Attribution is appre
 ## Author
 
 **Rohit Dangol**
-[github.com/rohitdangol](https://github.com/rohitdangol)
+[github.com/dangolrohit](https://github.com/dangolrohit)
 
 ---
 

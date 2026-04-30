@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Full Page Screenshot</title>
+  <style>
+    :root {
+      --bg:         #15120d;
+      --surface:    #1e1a13;
+      --card:       #252018;
+      --border:     #2f2820;
+      --text:       #ede1cc;
+      --muted:      #68594a;
+      --dim:        #352d24;
+      --accent:     #c4885a;
+      --accent-bg:  rgba(196,136,90,0.10);
+      --accent-glow:rgba(196,136,90,0.22);
+      --ok:         #7a9e6e;
+      --err:        #b87272;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 300px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      overflow: hidden;
+    }
+
+    /* ─── shared util ───────────────────────────────────────────── */
+    .u-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 14px 0;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       INTRO SCREEN
+    ═══════════════════════════════════════════════════════════════ */
+    #introScreen {
+      padding: 38px 26px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    #introScreen.out {
+      animation: fadeDown 0.28s ease-in forwards;
+    }
+
+    /* icon */
+    .i-icon {
+      width: 64px; height: 64px;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #2e2116, #1e1610);
+      border: 1px solid #3a2e20;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin-bottom: 22px;
+      box-shadow: 0 0 0 0 var(--accent-glow);
+      animation: warmPulse 3s ease-in-out infinite;
+    }
+
+    /* text */
+    .i-eyebrow {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .i-title {
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text);
+      letter-spacing: -0.3px;
+      margin-bottom: 12px;
+    }
+    .i-rule {
+      width: 28px; height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-bottom: 12px;
+      opacity: 0.7;
+    }
+    .i-author {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .i-author strong {
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .i-tagline {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 26px;
+      max-width: 200px;
+    }
+
+    /* start button */
+    .i-btn {
+      width: 100%;
+      padding: 12px 20px;
+      background: var(--accent);
+      color: #15120d;
+      border: none;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.2px;
+      transition: opacity 0.15s, transform 0.15s, box-shadow 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .i-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px var(--accent-glow);
+    }
+    .i-btn:active { transform: none; box-shadow: none; opacity: 1; }
+    .i-btn .chevron { font-size: 15px; transition: transform 0.2s; }
+    .i-btn:hover .chevron { transform: translateX(3px); }
+
+    .i-footer {
+      margin-top: 14px;
+      font-size: 10px;
+      color: var(--dim);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MAIN SCREEN
+    ═══════════════════════════════════════════════════════════════ */
+    #mainScreen {
+      padding: 16px 16px 18px;
+      display: none;
+    }
+    #mainScreen.show {
+      display: block;
+      animation: fadeUp 0.38s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    /* header */
+    .m-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .m-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(145deg, #2e2116, #1e1610);
+      border: 1px solid #3a2e20;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .m-title { font-size: 13px; font-weight: 700; color: var(--text); }
+    .m-sub   { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    /* format segmented control */
+    .fmt-wrap { margin-bottom: 10px; }
+    .fmt-bar {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 3px;
+      gap: 2px;
+      margin-top: 7px;
+    }
+    .fmt-bar input[type="radio"] { display: none; }
+    .fmt-lbl {
+      flex: 1;
+      cursor: pointer;
+    }
+    .fmt-pill {
+      display: block;
+      text-align: center;
+      padding: 7px 4px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      transition: background 0.15s, color 0.15s;
+      user-select: none;
+    }
+    .fmt-pill:hover { color: var(--text); }
+    .fmt-bar input[type="radio"]:checked + .fmt-pill {
+      background: var(--card);
+      color: var(--accent);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+    }
+    .fmt-rec {
+      font-size: 9px;
+      vertical-align: middle;
+      margin-left: 1px;
+      opacity: 0.8;
+    }
+
+    /* format hint */
+    .fmt-hint {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.55;
+      min-height: 34px;
+      margin-bottom: 12px;
+      padding: 0 1px;
+    }
+    .fmt-hint b { color: #a89070; font-weight: 600; }
+
+    /* quality */
+    .ql-section { margin-bottom: 14px; }
+    .ql-section.hidden { display: none; }
+    .ql-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .ql-val {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    input[type="range"]#qlSlider {
+      width: 100%;
+      -webkit-appearance: none;
+      height: 3px;
+      border-radius: 3px;
+      background: var(--dim);
+      outline: none;
+    }
+    input[type="range"]#qlSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 13px; height: 13px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+
+    /* capture button */
+    #captureBtn {
+      width: 100%;
+      padding: 12px 18px;
+      background: var(--accent);
+      color: #15120d;
+      border: none;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 0.2px;
+      transition: opacity 0.15s, transform 0.15s, box-shadow 0.2s;
+    }
+    #captureBtn:hover:not(:disabled) {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px var(--accent-glow);
+    }
+    #captureBtn:active:not(:disabled) { transform: none; box-shadow: none; }
+    #captureBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* progress */
+    .progress-wrap { margin-top: 12px; display: none; }
+    .progress-track {
+      height: 3px;
+      background: var(--dim);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #e8b87a);
+      border-radius: 3px;
+      transition: width 0.35s ease;
+      width: 0%;
+    }
+    #owner{
+      margin-top: 18px;
+      font-size: 10px;
+      color: var(--text);
+    }
+    #owner a {
+      color: var(--text);
+      text-decoration: none;
+    }
+    #statusTxt {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      min-height: 16px;
+    }
+    #statusTxt.ok  { color: var(--ok); }
+    #statusTxt.err { color: var(--err); }
+
+    /* ─── keyframes ────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+    @keyframes fadeDown {
+      from { opacity: 1; transform: translateY(0);    }
+      to   { opacity: 0; transform: translateY(-8px); }
+    }
+    @keyframes warmPulse {
+      0%,100% { box-shadow: 0 0 0 0   var(--accent-glow); }
+      50%      { box-shadow: 0 0 0 9px rgba(196,136,90,0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════ INTRO ════════ -->
+  <div id="introScreen">
+    <div class="i-icon">📷</div>
+
+    <p class="i-eyebrow">Welcome to</p>
+    <h1 class="i-title">Full Page<br>Screenshot</h1>
+    <div class="i-rule"></div>
+
+    <p class="i-author">by <strong>Rohit Dangol</strong></p>
+
+    <p class="i-tagline">
+      Capture any webpage as a single<br>
+      Ultra HD image — in one click.
+    </p>
+
+    <button class="i-btn" id="startBtn">
+      Start <span class="chevron">›</span>
+    </button>
+
+    <p class="i-footer">v2.0 &nbsp;·&nbsp; Full page &nbsp;·&nbsp; Single shot</p>
+  </div>
+
+  <!-- ════════ MAIN ════════ -->
+  <div id="mainScreen">
+
+    <div class="m-header">
+      <div class="m-icon">📷</div>
+      <div>
+        <div class="m-title">Full Page Screenshot</div>
+        <div class="m-sub">Ultra HD · Single image</div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- Format -->
+    <div class="fmt-wrap">
+      <span class="u-label">Format</span>
+      <div class="fmt-bar">
+        <label class="fmt-lbl">
+          <input type="radio" name="fmt" value="png">
+          <span class="fmt-pill">PNG</span>
+        </label>
+        <label class="fmt-lbl">
+          <input type="radio" name="fmt" value="webp" checked>
+          <span class="fmt-pill">WebP <span class="fmt-rec">✦</span></span>
+        </label>
+        <label class="fmt-lbl">
+          <input type="radio" name="fmt" value="jpeg">
+          <span class="fmt-pill">JPEG</span>
+        </label>
+      </div>
+    </div>
+
+    <p class="fmt-hint" id="fmtHint"></p>
+
+    <!-- Quality -->
+    <div class="ql-section" id="qlSection">
+      <div class="ql-row">
+        <span class="u-label">Quality</span>
+        <span class="ql-val" id="qlVal">90%</span>
+      </div>
+      <input type="range" id="qlSlider" min="60" max="100" step="5" value="90">
+    </div>
+
+    <button id="captureBtn">Capture Full Page</button>
+    <br>
+    <div></div>
+    
+    <div id="owner" style="text-align: center">by <a href="https://rohitdangol.com" target="_blank ">Rohit Dangol</a></div>
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div id="statusTxt"></div>
+    </div>
+
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
